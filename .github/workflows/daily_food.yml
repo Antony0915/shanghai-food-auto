@@ -1,0 +1,26 @@
+name: 上海美食日报
+
+on:
+  schedule:
+    # 北京时间每天 07:00 = UTC 23:00 (前一天)
+    - cron: '0 23 * * *'
+  workflow_dispatch:
+
+jobs:
+  daily-food:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 设置 Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: 安装依赖
+        run: pip install requests --no-cache-dir
+
+      - name: 生成并发送美食日报
+        env:
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+        run: python scripts/send_daily.py
